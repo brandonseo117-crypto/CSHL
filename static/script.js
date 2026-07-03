@@ -2,32 +2,34 @@ let array = [];
 let selected = [];
 let dailyCorrectMatches = [[0,1,2,3], [4,5,6,7], [8,9,10,11], [12,13,14,15]];
 
-function checkButtons(idx) {
-    let counter = 0;
-    for (let i = 0; i < array.length; i++) {
-        if (array[idx].isSelected == true) {
-            counter++;
-        }
-    }
-    if (counter == 4) {
-        for (let j = 0; j < array.length; j++) {
-            array[idx].disabled = true;
-}
-    }
-} // this counts the number of selected buttons and disables all buttons if 4 buttons are selected, like in normal connections
-
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
 } // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
 
 function appendAndRemove(idx) {
-    if (array[idx].isSelected == true) {
+    if (selected.length < 4) {
+        for (let i = 0; i < array.length; i++) {
+            array[i].disabled = false;
+        }
+        if (array[idx].isSelected == true) {
             selected.push(idx);
         }
-    if (array[idx].isSelected == false && selected.includes(idx)) {
+        if (array[idx].isSelected == false && selected.includes(idx)) {
             selected.splice(selected.indexOf(idx), 1);
         }
     }
+    else {
+        if (array[idx].isSelected == false && selected.includes(idx)) {
+            selected.splice(selected.indexOf(idx), 1);
+        }
+        else {
+            alert("You have already selected 4 buttons. Please deselect one before selecting another.");
+        }
+        for (let i = 0; i < array.length; i++) {
+            array[i].disabled = true;
+        }
+        }
+}
 // Appends choices to the selected array so that they can be compared to the correct matches.
 
 for (let i = 0; i < 16; i++) {
@@ -35,11 +37,10 @@ for (let i = 0; i < 16; i++) {
     button.isSelected = false;
     array.push(button);}
 
-for (let i = 0; i < array.length; i++) {
-    array[i].addEventListener("click", function() {
-        array[i].isSelected = !array[i].isSelected;
-        appendAndRemove(i);
-        checkButtons(i);
+for (let j = 0; j < array.length; j++) {
+    array[j].addEventListener("click", function() {
+        array[j].isSelected = !array[j].isSelected;
+        appendAndRemove(j);
         console.log('selected ts');
     });
 } 
@@ -61,6 +62,7 @@ submitBtn.addEventListener("click", function() {
                     array[number].classList.add("correct");
                     array[number].disabled = true;
                 }
+                selected.splice(0, 4);
                 console.log(selected.length)
                 break;
                 }
