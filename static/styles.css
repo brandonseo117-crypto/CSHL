@@ -1,5 +1,8 @@
+
+
 .images {
     display: grid;
+    grid-row: 1;
     grid-template-columns: repeat(4, 1fr);
     width: 50%;
     max-width: 1200px;
@@ -17,12 +20,39 @@ img {
 
 .correct {
     border: 5px solid #00dd51;
-    max-width: 100%
+    max-width: 100%;
     height: auto
+}
+
+.selected {
+    border: 5px solid #090000;
 }
 
 button {
     position: absolute;
     top: 5%;
     right: 5%;
+}
+
+.lives {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-row: 2;
+    width: 10%
+}
+
+#life1 {
+    opacity: 1;
+}
+
+#life2 {
+    opacity: 1;
+}
+
+#life3 {
+    opacity: 1;
+}
+
+#life4 {
+    opacity: 1;
 }

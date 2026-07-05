@@ -1,13 +1,14 @@
 let array = [];
 let selected = [];
 let dailyCorrectMatches = [[0,1,2,3], [4,5,6,7], [8,9,10,11], [12,13,14,15]];
+let lives = 0;
 
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
 } // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
 
 function appendAndRemove(idx) {
-    if (selected.length < 4) {
+    if (selected.length < 4 && array[idx].classList.contains("correct") == false) {
         for (let i = 0; i < array.length; i++) {
             array[i].disabled = false;
         }
@@ -17,13 +18,12 @@ function appendAndRemove(idx) {
         if (array[idx].isSelected == false && selected.includes(idx)) {
             selected.splice(selected.indexOf(idx), 1);
         }
+        array[idx].classList.toggle("selected");
     }
     else {
         if (array[idx].isSelected == false && selected.includes(idx)) {
             selected.splice(selected.indexOf(idx), 1);
-        }
-        else {
-            alert("You have already selected 4 buttons. Please deselect one before selecting another.");
+            array[idx].classList.toggle("selected");
         }
         for (let i = 0; i < array.length; i++) {
             array[i].disabled = true;
@@ -52,13 +52,22 @@ const submitBtn = document.querySelector("button");
 submitBtn.addEventListener("click", function() {
     if (selected.length == 4) {
         const sortedSelected = lowToHigh(selected);
+        let counter = 4;
         for (const match of dailyCorrectMatches) {
             if (JSON.stringify(sortedSelected) !== JSON.stringify(match)) {
-                alert("Incorrect match. Try again.");
+                counter--;
+                if (counter == 0) {
+                    alert("Incorrect match. Please try again.");
+                    lives++;
+                    for (let i=0; i < lives; i++) {
+                        document.getElementById(`life${4-i}`).style.opacity = '0'
+                    }
+                }
             }
             if (JSON.stringify(sortedSelected) === JSON.stringify(match)) {
                 alert("Correct match!");
                 for (const number of selected) {
+                    array[number].classList.remove("selected");
                     array[number].classList.add("correct");
                     array[number].disabled = true;
                 }
