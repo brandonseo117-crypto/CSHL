@@ -28,10 +28,16 @@ img {
     border: 5px solid #090000;
 }
 
-button {
+#submitbtn {
     position: absolute;
     top: 5%;
     right: 5%;
+}
+
+#shufflebtn {
+    position: absolute;
+    top: 20%;
+    right: 5%
 }
 
 .lives {

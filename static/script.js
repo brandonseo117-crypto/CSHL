@@ -1,7 +1,13 @@
 let array = [];
 let selected = [];
-let dailyCorrectMatches = [[0,1,2,3], [4,5,6,7], [8,9,10,11], [12,13,14,15]];
+let dailyCorrectMatches = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
 let lives = 0;
+const matchedGroups = {
+    0: 'group1',
+    1: 'group2',
+    2: 'group3',
+    3: 'group4'
+};
 
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
@@ -10,48 +16,56 @@ function lowToHigh(arr) {
 function appendAndRemove(idx) {
     if (selected.length < 4 && array[idx].classList.contains("correct") == false) {
         for (let i = 0; i < array.length; i++) {
-            array[i].disabled = false;
+            // images don't support disabled; leave as-is or use pointerEvents elsewhere
+            if (array[i]) array[i].disabled = false;
         }
-        if (array[idx].isSelected == true) {
-            selected.push(idx);
+        const el = array[idx];
+        const idNum = Number(el.id);
+        if (el.isSelected == true) {
+            if (!selected.includes(idNum)) selected.push(idNum);
         }
-        if (array[idx].isSelected == false && selected.includes(idx)) {
-            selected.splice(selected.indexOf(idx), 1);
+        if (el.isSelected == false && selected.includes(idNum)) {
+            selected.splice(selected.indexOf(idNum), 1);
         }
-        array[idx].classList.toggle("selected");
+        el.classList.toggle("selected");
     }
     else {
-        if (array[idx].isSelected == false && selected.includes(idx)) {
-            selected.splice(selected.indexOf(idx), 1);
-            array[idx].classList.toggle("selected");
+        const el = array[idx];
+        const idNum = el ? Number(el.id) : null;
+        if (el && el.isSelected == false && idNum !== null && selected.includes(idNum)) {
+            selected.splice(selected.indexOf(idNum), 1);
+            el.classList.toggle("selected");
         }
         for (let i = 0; i < array.length; i++) {
-            array[i].disabled = true;
+            if (array[i]) array[i].disabled = true;
         }
-        }
-}
+    }
+};
 // Appends choices to the selected array so that they can be compared to the correct matches.
 
 for (let i = 0; i < 16; i++) {
     const button = document.getElementById(`${i + 1}`);
     button.isSelected = false;
-    array.push(button);}
+    array.push(button)};
 
 for (let j = 0; j < array.length; j++) {
-    array[j].addEventListener("click", function() {
-        array[j].isSelected = !array[j].isSelected;
-        appendAndRemove(j);
+    const el = array[j];
+    if (!el) continue;
+    el.addEventListener("click", function(event) {
+        const clicked = event.currentTarget;
+        clicked.isSelected = !clicked.isSelected;
+        const idx = array.indexOf(clicked);
+        if (idx === -1) return;
+        appendAndRemove(idx);
         console.log('selected ts');
     });
-} 
-/* this creates an array of buttons and adds a click event listener to each button that toggles the isSelected property when clicked
-and adds the button to the selected array if it is selected and removes it from the selected array if it is deselected. It also calls 
-the checkButtons function to disable all buttons if 4 buttons are selected. */
+}
 
-const submitBtn = document.querySelector("button");
+
+const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
-    if (selected.length == 4) {
-        const sortedSelected = lowToHigh(selected);
+        if (selected.length == 4) {
+        const sortedSelected = lowToHigh([...selected]);
         let counter = 4;
         for (const match of dailyCorrectMatches) {
             if (JSON.stringify(sortedSelected) !== JSON.stringify(match)) {
@@ -60,16 +74,19 @@ submitBtn.addEventListener("click", function() {
                     alert("Incorrect match. Please try again.");
                     lives++;
                     for (let i=0; i < lives; i++) {
-                        document.getElementById(`life${4-i}`).style.opacity = '0'
+                        const lifeEl = document.getElementById(`life${4-i}`);
+                        if (lifeEl) lifeEl.style.opacity = '0'
                     }
                 }
             }
             if (JSON.stringify(sortedSelected) === JSON.stringify(match)) {
-                alert("Correct match!");
-                for (const number of selected) {
-                    array[number].classList.remove("selected");
-                    array[number].classList.add("correct");
-                    array[number].disabled = true;
+                alert(`${matchedGroups[dailyCorrectMatches.indexOf(match)]}`);
+                for (const idNum of selected) {
+                    const el = document.getElementById(String(idNum));
+                    if (!el) continue;
+                    el.classList.remove("selected");
+                    el.classList.add("correct");
+                    el.disabled = true;
                 }
                 selected.splice(0, 4);
                 console.log(selected.length)
@@ -85,5 +102,39 @@ submitBtn.addEventListener("click", function() {
 ); /* Creates a submit button that checks if the selected length is 4, sort from low to high, checks if any of the corrected matches match, 
 and alerts if the match is correct or incorrect. If correct, it adds a CSS class to the selected button and disables them from being clicked again. */
 
+function reroll() {
+    let newIdx = randint(0,15)
+    return newIdx
+};
 
-/* Need to add a life system */
+function shuffle(array) {
+    for (let i = array.length-1; i>0; i--) {
+        const j = Math.floor(Math.random() * (i+1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+} /* Fisher-Yates Algorithm*/
+// Shuffle the backing array and also reorder the DOM children inside the .images container
+function shuffleInDOM() {
+    // Fisher-Yates shuffle
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    const container = document.querySelector('.images');
+    if (!container) return;
+
+    // Re-append elements in shuffled order (skips falsy entries)
+    for (const el of array) {
+        if (el) container.appendChild(el);
+    }
+}
+
+const shuffleBtn = document.getElementById('shufflebtn');
+if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+        shuffleInDOM();
+    });
+}
