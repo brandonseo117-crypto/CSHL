@@ -8,7 +8,7 @@ System architecture:
 
 Selecting images
 
-1. When you click on an image, it adds a selected CSS class to it and pushes it to an array called selected
+1. When you click on an image, it adds a selected CSS class to it and pushes it's id to an array called selected
 2. If you click it again, the image gets the class removed and taken out of the selected array
 
 Submit button
@@ -19,4 +19,3 @@ Submit button
 Shuffling
 
 1. Fisher yates algorithm applied to return the images in shuffled order
-2.

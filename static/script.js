@@ -9,6 +9,23 @@ const matchedGroups = {
     3: 'group4'
 };
 
+async function sendData() {
+    const payload = 'somethinghere';
+    try {
+        const response = await fetch('/api/retrive-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        } catch (error) {
+        console.error('Fetch failed:', error.message);
+        throw error;
+    }
+}
+
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
 } // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
@@ -67,7 +84,7 @@ submitBtn.addEventListener("click", function() {
         const sortedSelected = lowToHigh([...selected]);
         let counter = 4;
         for (const match of dailyCorrectMatches) {
-            const sortedSelectedMatch = lowToHigh(match)
+            const sortedSelectedMatch = lowToHigh(match);
             if (JSON.stringify(sortedSelected) !== JSON.stringify(sortedSelectedMatch)) {
                 counter--;
                 if (counter == 0) {
