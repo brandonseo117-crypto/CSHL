@@ -1,6 +1,6 @@
 let array = [];
 let selected = [];
-let dailyCorrectMatches = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
+let dailyCorrectMatches = [[5,2,3,4], [1,6,7,8], [9,10,11,12], [13,14,15,16]];
 let lives = 0;
 const matchedGroups = {
     0: 'group1',
@@ -16,9 +16,8 @@ function lowToHigh(arr) {
 function appendAndRemove(idx) {
     if (selected.length < 4 && array[idx].classList.contains("correct") == false) {
         for (let i = 0; i < array.length; i++) {
-            // images don't support disabled; leave as-is or use pointerEvents elsewhere
             if (array[i]) array[i].disabled = false;
-        }
+        };
         const el = array[idx];
         const idNum = Number(el.id);
         if (el.isSelected == true) {
@@ -59,7 +58,7 @@ for (let j = 0; j < array.length; j++) {
         appendAndRemove(idx);
         console.log('selected ts');
     });
-}
+};
 
 
 const submitBtn = document.getElementById("submitbtn");
@@ -68,7 +67,8 @@ submitBtn.addEventListener("click", function() {
         const sortedSelected = lowToHigh([...selected]);
         let counter = 4;
         for (const match of dailyCorrectMatches) {
-            if (JSON.stringify(sortedSelected) !== JSON.stringify(match)) {
+            const sortedSelectedMatch = lowToHigh(match)
+            if (JSON.stringify(sortedSelected) !== JSON.stringify(sortedSelectedMatch)) {
                 counter--;
                 if (counter == 0) {
                     alert("Incorrect match. Please try again.");
@@ -79,7 +79,7 @@ submitBtn.addEventListener("click", function() {
                     }
                 }
             }
-            if (JSON.stringify(sortedSelected) === JSON.stringify(match)) {
+            if (JSON.stringify(sortedSelected) === JSON.stringify(sortedSelectedMatch)) {
                 alert(`${matchedGroups[dailyCorrectMatches.indexOf(match)]}`);
                 for (const idNum of selected) {
                     const el = document.getElementById(String(idNum));
@@ -114,7 +114,8 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-} /* Fisher-Yates Algorithm*/
+} // Fisher-Yates Algorithm
+
 // Shuffle the backing array and also reorder the DOM children inside the .images container
 function shuffleInDOM() {
     // Fisher-Yates shuffle
