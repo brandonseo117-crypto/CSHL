@@ -10,6 +10,15 @@ const matchedGroups = {
 };
 let attempts = 0;
 let correctAttempts = 0;
+let incorrectAttempts = 0;
+
+let forfeitStatus = 'N'
+
+let timesShuffled = 0;
+
+let deselectionEvents = 0;
+
+const startTime = performance.now()
 
 const arrayOfTimes = [];
 const order = [];
@@ -47,14 +56,22 @@ async function sendData(url, payload) {
     }
 };
 
-function formatIntoData(accuracy, timePerQuery, orderOfCorrectGuesses) {
-    const data = {
+function formatIntoData(accuracy, incorrectAttempts, timePerQuery, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime) {
+    const userData = {
         'Accuracy': accuracy,
+        'Incorrect guesses': incorrectAttempts,
         'Average time per selection': timePerQuery,
-        'Order of correct guesses': orderOfCorrectGuesses
+        'Time for first selection': timeTillFirstSelection,
+        'Order of correct guesses': orderOfCorrectGuesses,
+        'Times board was shuffled': timesShuffled,
+        'Deselection rate': deselectionRate,
+        'Deselection events': deselectionEvents,
+        'Total time to complete puzzle': totalTime,
+        'Actual selection of incorrect choices': incorrectSelections,
+        'Forfeit?': forfeitStatus
     }
 
-    return data
+    return userData
 };
 
 function lowToHigh(arr) {
@@ -82,6 +99,7 @@ function appendAndRemove(idx) {
         if (el && el.isSelected == false && idNum !== null && selected.includes(idNum)) {
             selected.splice(selected.indexOf(idNum), 1);
             el.classList.toggle("selected");
+            deselectionEvents++;
         }
         for (let i = 0; i < array.length; i++) {
             if (array[i]) array[i].disabled = true;
@@ -123,7 +141,9 @@ submitBtn.addEventListener("click", function() {
                     if (counter == 0) {
                         alert("Incorrect match. Please try again.");
                         attempts++;
+                        incorrectAttempts++;
                         const accuracy = correctAttempts / attempts;
+                        const deselectionRate = deselectionEvents / attempts;
                         console.log(accuracy);
                         lives++;
                         for (let i=0; i < lives; i++) {
@@ -145,10 +165,16 @@ submitBtn.addEventListener("click", function() {
                     };
                     attempts++;
                     correctAttempts++;
-                    const accuracy = correctAttempts/attempts;
+                    const accuracy = correctAttempts / attempts;
+                    const deselectionRate = deselectionEvents / attempts;
                     console.log(accuracy);
                     selected.splice(0, 4);
                     console.log(selected.length);
+                    if (correctAttempts == 4) {
+                        const timeAtCompletetion = performance.now();
+                        const totalTime = startTime - timeAtCompletetion;
+
+                    }
                     break;
                     }
                 }
@@ -196,5 +222,15 @@ const shuffleBtn = document.getElementById('shufflebtn');
 if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
         shuffleInDOM();
+        timesShuffled++;
     });
 }
+
+const forfeitBtn = document.getElementById('forfeitbtn');
+if (forfeitBtn) {
+    forfeitBtn.addEventListener('click', () => {
+        forfeitStatus = 'Y';
+        alert('Thanks for playing!');
+        console.log(forfeitStatus)
+    })
+};

@@ -36,7 +36,13 @@ img {
 
 #shufflebtn {
     position: absolute;
-    top: 20%;
+    top: 15%;
+    right: 5%
+}
+
+#forfeitbtn {
+    position: absolute;
+    top: 25%;
     right: 5%
 }
 
