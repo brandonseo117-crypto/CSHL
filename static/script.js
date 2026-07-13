@@ -10,30 +10,10 @@ const matchedGroups = {
 };
 let attempts = 0;
 let correctAttempts = 0;
+
+
+let accuracy = 0;
 let incorrectAttempts = 0;
-
-let incorrectSelections = [];
-
-let forfeitStatus = 'N';
-
-let timesShuffled = 0;
-
-let deselectionEvents = 0;
-
-const startTime = performance.now();
-
-const arrFirstSelection = [startTime]
-const arrFirstSubmission = [startTime]
-
-const arrayOfTimes = [];
-const order = [];
-
-function findFirstTimes(selectionArray, submissionArray) {
-    const timeTillFirstSelection = selectionArray[1] - selectionArray[0];
-    const timeTillFirstSubmission = submissionArray[1] - submissionArray[0];
-
-    return [timeTillFirstSelection, timeTillFirstSubmission]
-};
 
 function getAvgTimes(array) {
     const timePerQueries = [];
@@ -44,7 +24,41 @@ function getAvgTimes(array) {
     const averageTime = sum / timePerQueries.length;
 
     return averageTime
-}
+};
+
+function findFirstTimes(selectionArray, submissionArray) {
+    const timeTillFirstSelection = selectionArray[1] - selectionArray[0];
+    const timeTillFirstSubmission = submissionArray[1] - submissionArray[0];
+
+    return [timeTillFirstSelection, timeTillFirstSubmission]
+};
+
+const order = [];
+let timesShuffled = 0;
+let deselectionRate = 0;
+let deselectionEvents = 0;
+let totalTime = 0;
+let incorrectSelections = [];
+let forfeitStatus = 'N';
+
+function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, forfeitStatus) {
+    const userData = {
+        'Accuracy': accuracy,
+        'Incorrect guesses': incorrectAttempts,
+        'Average time per selection': timePerQuery,
+        'Time for first selection': timeTillFirstSelection,
+        'Time for first submission': timeTillFirstSubmission, 
+        'Order of correct guesses': orderOfCorrectGuesses,
+        'Times board was shuffled': timesShuffled,
+        'Deselection rate': deselectionRate,
+        'Deselection events': deselectionEvents,
+        'Total time to complete puzzle': totalTime,
+        'Actual selection of incorrect choices': incorrectSelections,
+        'Forfeit?': forfeitStatus
+    }
+
+    return userData
+};
 
 async function sendData(url, payload) {
     try {
@@ -68,24 +82,12 @@ async function sendData(url, payload) {
     }
 };
 
-function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, forfeitStatus) {
-    const userData = {
-        'Accuracy': accuracy,
-        'Incorrect guesses': incorrectAttempts,
-        'Average time per selection': timePerQuery,
-        'Time for first selection': timeTillFirstSelection, //ts
-        'Time for first submission': timeTillFirstSubmission, //ts
-        'Order of correct guesses': orderOfCorrectGuesses,
-        'Times board was shuffled': timesShuffled,
-        'Deselection rate': deselectionRate,
-        'Deselection events': deselectionEvents,
-        'Total time to complete puzzle': totalTime,
-        'Actual selection of incorrect choices': incorrectSelections,
-        'Forfeit?': forfeitStatus
-    }
+const startTime = performance.now();
 
-    return userData
-};
+const arrFirstSelection = [startTime]
+const arrFirstSubmission = [startTime]
+
+const arrayOfTimes = [];
 
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
@@ -159,8 +161,8 @@ submitBtn.addEventListener("click", function() {
                         incorrectSelections.push(selected);
                         attempts++;
                         incorrectAttempts++;
-                        const accuracy = correctAttempts / attempts;
-                        const deselectionRate = deselectionEvents / attempts;
+                        accuracy = correctAttempts / attempts;
+                        deselectionRate = deselectionEvents / attempts;
                         console.log(accuracy);
                         lives++;
                         for (let i=0; i < lives; i++) {
@@ -182,14 +184,14 @@ submitBtn.addEventListener("click", function() {
                     };
                     attempts++;
                     correctAttempts++;
-                    const accuracy = correctAttempts / attempts;
-                    const deselectionRate = deselectionEvents / attempts;
+                    accuracy = correctAttempts / attempts;
+                    deselectionRate = deselectionEvents / attempts;
                     console.log(accuracy);
                     selected.splice(0, 4);
                     console.log(selected.length);
                     if (correctAttempts == 4) {
                         const timeAtCompletetion = performance.now();
-                        const totalTime = startTime - timeAtCompletetion;
+                        totalTime = startTime - timeAtCompletetion;
                     }
                     break;
                     }
