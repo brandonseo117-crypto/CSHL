@@ -12,16 +12,28 @@ let attempts = 0;
 let correctAttempts = 0;
 let incorrectAttempts = 0;
 
-let forfeitStatus = 'N'
+let incorrectSelections = [];
+
+let forfeitStatus = 'N';
 
 let timesShuffled = 0;
 
 let deselectionEvents = 0;
 
-const startTime = performance.now()
+const startTime = performance.now();
+
+const arrFirstSelection = [startTime]
+const arrFirstSubmission = [startTime]
 
 const arrayOfTimes = [];
 const order = [];
+
+function findFirstTimes(selectionArray, submissionArray) {
+    const timeTillFirstSelection = selectionArray[1] - selectionArray[0];
+    const timeTillFirstSubmission = submissionArray[1] - submissionArray[0];
+
+    return [timeTillFirstSelection, timeTillFirstSubmission]
+};
 
 function getAvgTimes(array) {
     const timePerQueries = [];
@@ -56,12 +68,13 @@ async function sendData(url, payload) {
     }
 };
 
-function formatIntoData(accuracy, incorrectAttempts, timePerQuery, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime) {
+function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, forfeitStatus) {
     const userData = {
         'Accuracy': accuracy,
         'Incorrect guesses': incorrectAttempts,
         'Average time per selection': timePerQuery,
-        'Time for first selection': timeTillFirstSelection,
+        'Time for first selection': timeTillFirstSelection, //ts
+        'Time for first submission': timeTillFirstSubmission, //ts
         'Order of correct guesses': orderOfCorrectGuesses,
         'Times board was shuffled': timesShuffled,
         'Deselection rate': deselectionRate,
@@ -90,6 +103,7 @@ function appendAndRemove(idx) {
         }
         if (el.isSelected == false && selected.includes(idNum)) {
             selected.splice(selected.indexOf(idNum), 1);
+            deselectionEvents++;
         }
         el.classList.toggle("selected");
     }
@@ -119,6 +133,7 @@ for (let j = 0; j < array.length; j++) {
     el.addEventListener("click", function(event) {
         const clicked = event.currentTarget;
         clicked.isSelected = !clicked.isSelected;
+        if (arrFirstSelection.length == 1) arrFirstSelection.push(performance.now());
         const idx = array.indexOf(clicked);
         if (idx === -1) return;
         appendAndRemove(idx);
@@ -132,6 +147,7 @@ for (let j = 0; j < array.length; j++) {
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
         if (selected.length == 4) {
+            if (arrFirstSubmission.length == 1) arrFirstSubmission.push(performance.now());
             const sortedSelected = lowToHigh([...selected]);
             let counter = 4;
             for (const match of dailyCorrectMatches) {
@@ -140,6 +156,7 @@ submitBtn.addEventListener("click", function() {
                     counter--;
                     if (counter == 0) {
                         alert("Incorrect match. Please try again.");
+                        incorrectSelections.push(selected);
                         attempts++;
                         incorrectAttempts++;
                         const accuracy = correctAttempts / attempts;
@@ -173,7 +190,6 @@ submitBtn.addEventListener("click", function() {
                     if (correctAttempts == 4) {
                         const timeAtCompletetion = performance.now();
                         const totalTime = startTime - timeAtCompletetion;
-
                     }
                     break;
                     }
