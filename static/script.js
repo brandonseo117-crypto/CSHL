@@ -8,10 +8,8 @@ const matchedGroups = {
     2: 'group3',
     3: 'group4'
 };
-const attempts = 0;
-const correctAttempts = 0;
-const totalAttempts = attempts + correctAttempts;
-const accuracy = correctAttempts/totalAttempts; //fix ts later
+let attempts = 0;
+let correctAttempts = 0;
 
 const arrayOfTimes = [];
 const order = [];
@@ -116,45 +114,49 @@ for (let j = 0; j < array.length; j++) {
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
         if (selected.length == 4) {
-        const sortedSelected = lowToHigh([...selected]);
-        let counter = 4;
-        for (const match of dailyCorrectMatches) {
-            const sortedSelectedMatch = lowToHigh(match);
-            if (JSON.stringify(sortedSelected) !== JSON.stringify(sortedSelectedMatch)) {
-                counter--;
-                if (counter == 0) {
-                    alert("Incorrect match. Please try again.");
+            const sortedSelected = lowToHigh([...selected]);
+            let counter = 4;
+            for (const match of dailyCorrectMatches) {
+                const sortedSelectedMatch = lowToHigh(match);
+                if (JSON.stringify(sortedSelected) !== JSON.stringify(sortedSelectedMatch)) {
+                    counter--;
+                    if (counter == 0) {
+                        alert("Incorrect match. Please try again.");
+                        attempts++;
+                        const accuracy = correctAttempts / attempts;
+                        console.log(accuracy);
+                        lives++;
+                        for (let i=0; i < lives; i++) {
+                            const lifeEl = document.getElementById(`life${4-i}`);
+                            if (lifeEl) lifeEl.style.opacity = '0'
+                        }
+                    }
+                }
+                if (JSON.stringify(sortedSelected) === JSON.stringify(sortedSelectedMatch)) {
+                    const correctChoice = matchedGroups[dailyCorrectMatches.indexOf(match)]
+                    alert(`${correctChoice}`);
+                    order.push(correctChoice);
+                    for (const idNum of selected) {
+                        const el = document.getElementById(String(idNum));
+                        if (!el) continue;
+                        el.classList.remove("selected");
+                        el.classList.add("correct");
+                        el.disabled = true;
+                    };
                     attempts++;
-                    lives++;
-                    for (let i=0; i < lives; i++) {
-                        const lifeEl = document.getElementById(`life${4-i}`);
-                        if (lifeEl) lifeEl.style.opacity = '0'
+                    correctAttempts++;
+                    const accuracy = correctAttempts/attempts;
+                    console.log(accuracy);
+                    selected.splice(0, 4);
+                    console.log(selected.length);
+                    break;
                     }
                 }
             }
-            if (JSON.stringify(sortedSelected) === JSON.stringify(sortedSelectedMatch)) {
-                const correctChoice = matchedGroups[dailyCorrectMatches.indexOf(match)]
-                alert(`${correctChoice}`);
-                order.push(correctChoice);
-                for (const idNum of selected) {
-                    const el = document.getElementById(String(idNum));
-                    if (!el) continue;
-                    el.classList.remove("selected");
-                    el.classList.add("correct");
-                    el.disabled = true;
-                    if (correctAttempts == 4) sendData
-                };
-                correctAttempts++;
-                selected.splice(0, 4);
-                console.log(selected.length);
-                break;
-                }
-            }
+        else {
+            alert("Please select 4 buttons before submitting.");
+            console.log(selected.length);
         }
-    else {
-        alert("Please select 4 buttons before submitting.");
-        console.log(selected.length);
-    }
     }
 ); /* Creates a submit button that checks if the selected length is 4, sort from low to high, checks if any of the corrected matches match, 
 and alerts if the match is correct or incorrect. If correct, it adds a CSS class to the selected button and disables them from being clicked again. */
