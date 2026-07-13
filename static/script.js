@@ -8,11 +8,27 @@ const matchedGroups = {
     2: 'group3',
     3: 'group4'
 };
+const attempts = 0;
+const correctAttempts = 0;
+const totalAttempts = attempts + correctAttempts;
+const accuracy = correctAttempts/totalAttempts; //fix ts later
 
-async function sendData() {
-    const payload = 'somethinghere';
+const arrayOfTimes = [];
+
+function getAvgTimes(array) {
+    const timePerQueries = [];
+    for (let i=0; i < array.length; i+=2) {
+        if (array[i+1]) timePerQueries.push(array[i+1]-array[i])
+    };
+    const sum = timePerQueries.reduce((total, num) => total + num, 0);
+    const averageTime = sum / timePerQueries.length;
+
+    return averageTime
+}
+
+async function sendData(url, payload) {
     try {
-        const response = await fetch('/api/retrive-data', {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -20,15 +36,31 @@ async function sendData() {
             body: JSON.stringify(payload)
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        const data = await response.json();
+        return data;
+
         } catch (error) {
         console.error('Fetch failed:', error.message);
         throw error;
     }
-}
+};
+
+function formatIntoData(accuracy, timePerQuery, orderOfCorrectGuesses) {
+    const data = {
+        'Accuracy': accuracy,
+        'Average time per selection': timePerQuery,
+        'Order of correct guesses': orderOfCorrectGuesses
+    }
+
+    return data
+};
 
 function lowToHigh(arr) {
     return arr.sort((a, b) => a - b);
-} // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
+}; // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
 
 function appendAndRemove(idx) {
     if (selected.length < 4 && array[idx].classList.contains("correct") == false) {
@@ -73,10 +105,12 @@ for (let j = 0; j < array.length; j++) {
         const idx = array.indexOf(clicked);
         if (idx === -1) return;
         appendAndRemove(idx);
+        const time = performance.now();
+        arrayOfTimes.push(time);
         console.log('selected ts');
+        console.log(getAvgTimes(arrayOfTimes)) //Maybe change?
     });
 };
-
 
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
@@ -89,6 +123,7 @@ submitBtn.addEventListener("click", function() {
                 counter--;
                 if (counter == 0) {
                     alert("Incorrect match. Please try again.");
+                    attempts++;
                     lives++;
                     for (let i=0; i < lives; i++) {
                         const lifeEl = document.getElementById(`life${4-i}`);
@@ -104,9 +139,11 @@ submitBtn.addEventListener("click", function() {
                     el.classList.remove("selected");
                     el.classList.add("correct");
                     el.disabled = true;
+                    if (correctAttempts == 4) sendData
                 }
+                correctAttempts++;
                 selected.splice(0, 4);
-                console.log(selected.length)
+                console.log(selected.length);
                 break;
                 }
             }
@@ -148,7 +185,7 @@ function shuffleInDOM() {
     for (const el of array) {
         if (el) container.appendChild(el);
     }
-}
+};
 
 const shuffleBtn = document.getElementById('shufflebtn');
 if (shuffleBtn) {
