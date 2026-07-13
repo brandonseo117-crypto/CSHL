@@ -21,7 +21,7 @@ def color_stats(image):
 
 class StimulusImage:
     def __init__(self, image_name, red, green, blue):
-        self.image_path = image_name
+        self.image_name = image_name
         self.red = red
         self.green = green
         self.blue = blue
@@ -35,3 +35,28 @@ for image in iterable_folder:
     image_list.append(StimulusImage(
         image_name=image.name, red=r, green=g, blue=b)
     )
+
+most_red = sorted(image_list, key=lambda x: x.red, reverse=True)
+most_green = sorted(image_list, key=lambda x: x.green, reverse=True)
+most_blue = sorted(image_list, key=lambda x: x.blue, reverse=True)
+
+print('Red images:')
+for image in most_red[:4]:
+    if image == most_red[3]:
+        print(f'{image.image_name}\n')
+    else:
+        print(image.image_name)
+
+print('Green images:')
+for image in most_green[:4]:
+    if image == most_green[3]:
+        print(f'{image.image_name}\n')
+    else:
+        print(image.image_name)
+
+print('Blue images:')
+for image in most_blue[:4]:
+    if image == most_blue[3]:
+        print(f'{image.image_name}\n')
+    else:
+        print(image.image_name)
