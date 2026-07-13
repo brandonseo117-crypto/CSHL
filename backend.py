@@ -10,9 +10,10 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/api/retrive-data")
+@app.route("/api/retrive-data", methods=['POST'])
 def receive_data():
     data = request.get_json()
+    return jsonify({'status': 'ok'})
 
 
 if __name__ == "__main__":

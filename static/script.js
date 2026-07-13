@@ -10,8 +10,6 @@ const matchedGroups = {
 };
 let attempts = 0;
 let correctAttempts = 0;
-
-
 let accuracy = 0;
 let incorrectAttempts = 0;
 
@@ -37,7 +35,7 @@ const order = [];
 let timesShuffled = 0;
 let deselectionRate = 0;
 let deselectionEvents = 0;
-let totalTime = 0;
+// No need to make total time global
 let incorrectSelections = [];
 let forfeitStatus = 'N';
 
@@ -191,7 +189,23 @@ submitBtn.addEventListener("click", function() {
                     console.log(selected.length);
                     if (correctAttempts == 4) {
                         const timeAtCompletetion = performance.now();
-                        totalTime = startTime - timeAtCompletetion;
+                        const totalTime = timeAtCompletetion - startTime;
+                        const userData = formatIntoData(
+                            accuracy, 
+                            incorrectAttempts, 
+                            getAvgTimes(arrayOfTimes), 
+                            findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
+                            findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
+                            order, 
+                            timesShuffled, 
+                            deselectionRate, 
+                            deselectionEvents, 
+                            totalTime, 
+                            incorrectSelections, 
+                            forfeitStatus
+                        );
+                        const url = '/api/retrive-data';
+                        sendData(url, userData)
                     }
                     break;
                     }
@@ -249,6 +263,23 @@ if (forfeitBtn) {
     forfeitBtn.addEventListener('click', () => {
         forfeitStatus = 'Y';
         alert('Thanks for playing!');
-        console.log(forfeitStatus)
+        const timeAtCompletetion = performance.now();
+        const totalTime = timeAtCompletetion - startTime;
+        const userData = formatIntoData(
+            accuracy, 
+            incorrectAttempts, 
+            getAvgTimes(arrayOfTimes), 
+            findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
+            findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
+            order, 
+            timesShuffled, 
+            deselectionRate, 
+            deselectionEvents, 
+            totalTime, 
+            incorrectSelections, 
+            forfeitStatus
+        );
+        const url = '/api/retrive-data';
+        sendData(url, userData)
     })
 };
