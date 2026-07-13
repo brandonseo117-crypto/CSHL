@@ -14,6 +14,7 @@ const totalAttempts = attempts + correctAttempts;
 const accuracy = correctAttempts/totalAttempts; //fix ts later
 
 const arrayOfTimes = [];
+const order = [];
 
 function getAvgTimes(array) {
     const timePerQueries = [];
@@ -132,7 +133,9 @@ submitBtn.addEventListener("click", function() {
                 }
             }
             if (JSON.stringify(sortedSelected) === JSON.stringify(sortedSelectedMatch)) {
-                alert(`${matchedGroups[dailyCorrectMatches.indexOf(match)]}`);
+                const correctChoice = matchedGroups[dailyCorrectMatches.indexOf(match)]
+                alert(`${correctChoice}`);
+                order.push(correctChoice);
                 for (const idNum of selected) {
                     const el = document.getElementById(String(idNum));
                     if (!el) continue;
@@ -140,7 +143,7 @@ submitBtn.addEventListener("click", function() {
                     el.classList.add("correct");
                     el.disabled = true;
                     if (correctAttempts == 4) sendData
-                }
+                };
                 correctAttempts++;
                 selected.splice(0, 4);
                 console.log(selected.length);
