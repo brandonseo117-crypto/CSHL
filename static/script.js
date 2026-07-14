@@ -208,6 +208,7 @@ submitBtn.addEventListener("click", function() {
                         if (!el) continue;
                         el.classList.remove("selected");
                         el.classList.add("correct");
+                        el.setAttribute('src', 'static/black.jpg');
                         el.disabled = true;
                     };
                     moveCorrectImagesToTopRow(selected, correctChoice);
