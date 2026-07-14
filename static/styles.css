@@ -21,12 +21,6 @@ img {
     cursor: pointer;
 }
 
-.correct {
-    border: 5px solid #00dd51;
-    max-width: 100%;
-    height: auto
-}
-
 .correct-group {
     border: 5px solid rgb(0, 0, 0);
 }

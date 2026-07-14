@@ -92,7 +92,7 @@ function lowToHigh(arr) {
 }; // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
 
 function appendAndRemove(idx) {
-    if (selected.length < 4 && array[idx].classList.contains("correct") == false) {
+    if (selected.length < 4 && array[idx].classList.contains("correct-group") == false) {
         for (let i = 0; i < array.length; i++) {
             if (array[i]) array[i].disabled = false;
         };
