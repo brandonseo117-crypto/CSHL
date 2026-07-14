@@ -221,8 +221,9 @@ submitBtn.addEventListener("click", function() {
                                 forfeitStatus
                             );
                             const url = '/api/retrive-data';
-                            sendData(url, userData)
+                            sendData(url, userData);
                             setBoardEnabled(false);
+                            forfeitBtn.disabled = true;
                         }
                     }
                 }
@@ -266,6 +267,7 @@ submitBtn.addEventListener("click", function() {
                         const url = '/api/retrive-data';
                         sendData(url, userData)
                         setBoardEnabled(false);
+                        forfeitBtn.disabled = true;
                     }
                     break;
                     }
@@ -344,6 +346,7 @@ if (forfeitBtn) {
             forfeitStatus
         );
         const url = '/api/retrive-data';
-        sendData(url, userData)
+        sendData(url, userData);
+        forfeitBtn.disabled = true;
     })
 };
