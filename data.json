@@ -1,1 +1,42 @@
-[]
+[
+    {
+        "Accuracy": 1,
+        "Incorrect guesses": 0,
+        "Average time per selection": 326.0499999523163,
+        "Time for first selection": 702.2000000476837,
+        "Time for first submission": 2451.5,
+        "Order of correct guesses": [
+            "Green images",
+            "Red images",
+            "Dark blue images",
+            "Light blue images"
+        ],
+        "Times board was shuffled": 0,
+        "Deselection rate": 0,
+        "Deselection events": 0,
+        "Total time to complete puzzle": 11874.200000047684,
+        "Actual selection of incorrect choices": [],
+        "Forfeit?": "N"
+    },
+    {
+        "Accuracy": 0.8,
+        "Incorrect guesses": 1,
+        "Average time per selection": 555.8454545194453,
+        "Time for first selection": 597.2000000476837,
+        "Time for first submission": 3258.5,
+        "Order of correct guesses": [
+            "Green images",
+            "Red images",
+            "Light blue images",
+            "Dark blue images"
+        ],
+        "Times board was shuffled": 0,
+        "Deselection rate": 0.6,
+        "Deselection events": 3,
+        "Total time to complete puzzle": 19658.400000095367,
+        "Actual selection of incorrect choices": [
+            []
+        ],
+        "Forfeit?": "N"
+    }
+]

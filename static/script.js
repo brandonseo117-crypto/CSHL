@@ -92,43 +92,46 @@ function lowToHigh(arr) {
 }; // This is needed to order the selected buttons in ascending order so that they can be compared to the correct matches.
 
 function appendAndRemove(idx) {
-    if (selected.length < 4 && array[idx].classList.contains("correct-group") == false) {
-        for (let i = 0; i < array.length; i++) {
-            if (array[i]) array[i].disabled = false;
-        };
-        const el = array[idx];
-        const idNum = Number(el.id);
-        if (el.isSelected == true) {
-            if (!selected.includes(idNum)) selected.push(idNum);
+    const el = array[idx];
+    if (!el || el.classList.contains("correct-group")) return;
+
+    const idNum = Number(el.id);
+    if (el.isSelected) {
+        if (!selected.includes(idNum) && selected.length < 4) {
+            selected.push(idNum);
         }
-        if (el.isSelected == false && selected.includes(idNum)) {
-            selected.splice(selected.indexOf(idNum), 1);
-            deselectionEvents++;
-        }
-        el.classList.toggle("selected");
+    } else if (selected.includes(idNum)) {
+        selected.splice(selected.indexOf(idNum), 1);
+        deselectionEvents++;
     }
-    else {
-        const el = array[idx];
-        const idNum = el ? Number(el.id) : null;
-        if (el && el.isSelected == false && idNum !== null && selected.includes(idNum)) {
-            selected.splice(selected.indexOf(idNum), 1);
-            el.classList.toggle("selected");
-            deselectionEvents++;
+
+    el.classList.toggle("selected");
+
+    if (selected.length >= 4) {
+        for (const candidate of array) {
+            if (!candidate || candidate.classList.contains("correct-group")) continue;
+            candidate.disabled = !candidate.classList.contains("selected");
         }
-        for (let i = 0; i < array.length; i++) {
-            if (array[i]) array[i].disabled = true;
+    } else {
+        for (const candidate of array) {
+            if (!candidate || candidate.classList.contains("correct-group")) continue;
+            candidate.disabled = false;
         }
     }
 };
     // Enable or disable all interactive board elements
-    function setBoardEnabled(enabled) {
-        for (const el of array) {
-            if (!el) continue;
-            el.disabled = !enabled;
-            if (!enabled) el.classList.add('locked');
-            else el.classList.remove('locked');
+function setBoardEnabled(enabled) {
+    for (const el of array) {
+        if (!el) continue;
+        if (enabled && el.classList.contains('correct-group')) {
+            el.disabled = true;
+            continue;
         }
+        el.disabled = !enabled;
+        if (!enabled) el.classList.add('locked');
+        else el.classList.remove('locked');
     }
+}
 
 // Move a completed correct group into the top row and label it with the category.
 function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
@@ -175,7 +178,6 @@ for (let j = 0; j < array.length; j++) {
         const time = performance.now();
         arrayOfTimes.push(time);
         console.log('selected ts');
-        console.log(getAvgTimes(arrayOfTimes)) //Maybe change?
     });
 };
 
@@ -246,6 +248,7 @@ submitBtn.addEventListener("click", function() {
                     deselectionRate = deselectionEvents / attempts;
                     console.log(accuracy);
                     selected.splice(0, 4);
+                    setBoardEnabled(true);
                     console.log(selected.length);
                     if (correctAttempts == 4) {
                         const timeAtCompletetion = performance.now();
