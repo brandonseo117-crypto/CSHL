@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import Image, ImageStat
+from PIL import Image
 from dotenv import load_dotenv
 import os
 import colorsys
@@ -9,10 +9,10 @@ folder_path = os.getenv('IMAGE_FOLDER_PATH')
 image_list = []
 
 
-def color_score(image_path, target_hue_deg, hue_window=60):
+def score_hue(image_path, target_hue_deg, hue_window=45, saturation_boost=1.4):
     with Image.open(image_path).convert('RGB') as img:
         sample = img.resize((128, 128))
-        pixels = list(sample.getdata())
+        pixels = list(sample.get_flattened_data())
 
     total_weight = 0.0
     weighted_score = 0.0
@@ -24,7 +24,7 @@ def color_score(image_path, target_hue_deg, hue_window=60):
         hue_dist = min(abs(hue_deg - target_hue_deg),
                        360 - abs(hue_deg - target_hue_deg))
         hue_match = max(0.0, 1.0 - (hue_dist / hue_window))
-        pixel_weight = s * v
+        pixel_weight = (s * saturation_boost) * v
 
         if pixel_weight <= 0:
             continue
@@ -38,10 +38,22 @@ def color_score(image_path, target_hue_deg, hue_window=60):
     return weighted_score / total_weight
 
 
+def score_red(image_path):
+    return score_hue(image_path, 0, hue_window=35)
+
+
+def score_green(image_path):
+    return score_hue(image_path, 120, hue_window=45)
+
+
+def score_blue(image_path):
+    return score_hue(image_path, 240, hue_window=35)
+
+
 def color_stats(image):
-    red = color_score(image, 0)
-    green = color_score(image, 120)
-    blue = color_score(image, 240)
+    red = score_red(image)
+    green = score_green(image)
+    blue = score_blue(image)
 
     return red, green, blue
 
