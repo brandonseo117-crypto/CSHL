@@ -9,23 +9,39 @@ folder_path = os.getenv('IMAGE_FOLDER_PATH')
 image_list = []
 
 
-def color_score(r, g, b, target_hue_deg):
-    h, s, v = colorsys.rgb_to_hsv(r, g, b)
-    hue_deg = h * 360
-    hue_dist = min(abs(hue_deg - target_hue_deg),
-                   360 - abs(hue_deg - target_hue_deg))
-    hue_match = 1 - (hue_dist / 180)
-    return hue_match * s * v
+def color_score(image_path, target_hue_deg, hue_window=60):
+    with Image.open(image_path).convert('RGB') as img:
+        sample = img.resize((128, 128))
+        pixels = list(sample.getdata())
+
+    total_weight = 0.0
+    weighted_score = 0.0
+
+    for r, g, b in pixels:
+        r, g, b = [channel / 255.0 for channel in (r, g, b)]
+        h, s, v = colorsys.rgb_to_hsv(r, g, b)
+        hue_deg = h * 360
+        hue_dist = min(abs(hue_deg - target_hue_deg),
+                       360 - abs(hue_deg - target_hue_deg))
+        hue_match = max(0.0, 1.0 - (hue_dist / hue_window))
+        pixel_weight = s * v
+
+        if pixel_weight <= 0:
+            continue
+
+        weighted_score += hue_match * pixel_weight
+        total_weight += pixel_weight
+
+    if total_weight == 0:
+        return 0.0
+
+    return weighted_score / total_weight
 
 
 def color_stats(image):
-    with Image.open(image).convert('RGB') as img:
-        stats = ImageStat.Stat(img)
-        r, g, b = [x / 255.0 for x in stats.mean]
-
-    red = color_score(r, g, b, 0)
-    green = color_score(r, g, b, 120)
-    blue = color_score(r, g, b, 240)
+    red = color_score(image, 0)
+    green = color_score(image, 120)
+    blue = color_score(image, 240)
 
     return red, green, blue
 
