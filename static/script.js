@@ -1,12 +1,12 @@
 let array = [];
 let selected = [];
-let dailyCorrectMatches = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
+let dailyCorrectMatches = [[5,16,4,3], [15,1,6,12], [14,10,2,8], [13,7,11,9]];
 let lives = 0;
 const matchedGroups = {
-    0: 'group1',
-    1: 'group2',
-    2: 'group3',
-    3: 'group4'
+    0: 'red',
+    1: 'green',
+    2: 'light blue',
+    3: 'dark blue'
 };
 let attempts = 0;
 let correctAttempts = 0;
