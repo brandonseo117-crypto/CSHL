@@ -3,10 +3,10 @@ let selected = [];
 let dailyCorrectMatches = [[5,16,4,3], [15,1,6,12], [14,10,2,8], [13,7,11,9]];
 let lives = 0;
 const matchedGroups = {
-    0: 'red',
-    1: 'green',
-    2: 'light blue',
-    3: 'dark blue'
+    0: 'Red images',
+    1: 'Green images',
+    2: 'Light blue images',
+    3: 'Dark blue images'
 };
 let attempts = 0;
 let correctAttempts = 0;
@@ -142,11 +142,6 @@ function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
 
     const existingLabel = document.querySelector('.correct-group-label');
     if (existingLabel) existingLabel.remove();
-
-    const label = document.createElement('div');
-    label.className = 'correct-group-label';
-    label.textContent = `${categoryLabel.toUpperCase()} GROUP`;
-    container.parentNode.insertBefore(label, container);
 }
 
 // Appends choices to the selected array so that they can be compared to the correct matches.
@@ -196,6 +191,26 @@ submitBtn.addEventListener("click", function() {
                         for (let i=0; i < lives; i++) {
                             const lifeEl = document.getElementById(`life${4-i}`);
                             if (lifeEl) lifeEl.style.opacity = '0'
+                        };
+                        if (incorrectAttempts == 4) {
+                            const timeAtCompletetion = performance.now();
+                            const totalTime = timeAtCompletetion - startTime;
+                            const userData = formatIntoData(
+                                accuracy, 
+                                incorrectAttempts, 
+                                getAvgTimes(arrayOfTimes), 
+                                findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
+                                findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
+                                order, 
+                                timesShuffled, 
+                                deselectionRate, 
+                                deselectionEvents, 
+                                totalTime, 
+                                incorrectSelections, 
+                                forfeitStatus
+                            );
+                            const url = '/api/retrive-data';
+                            sendData(url, userData)
                         }
                     }
                 }
