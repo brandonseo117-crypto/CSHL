@@ -78,3 +78,10 @@ img {
 #life4 {
     opacity: 1;
 }
+
+/* When board is locked (won/lost/forfeit) */
+.locked {
+    pointer-events: none;
+    opacity: 0.6;
+    filter: grayscale(30%);
+}

@@ -120,6 +120,16 @@ function appendAndRemove(idx) {
         }
     }
 };
+    // Enable or disable all interactive board elements
+    function setBoardEnabled(enabled) {
+        for (const el of array) {
+            if (!el) continue;
+            el.disabled = !enabled;
+            if (!enabled) el.classList.add('locked');
+            else el.classList.remove('locked');
+        }
+    }
+
 // Move a completed correct group into the top row and label it with the category.
 function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
     const container = document.querySelector('.images');
@@ -156,6 +166,7 @@ for (let j = 0; j < array.length; j++) {
     if (!el) continue;
     el.addEventListener("click", function(event) {
         const clicked = event.currentTarget;
+        if (clicked.disabled) return;
         clicked.isSelected = !clicked.isSelected;
         if (arrFirstSelection.length == 1) arrFirstSelection.push(performance.now());
         const idx = array.indexOf(clicked);
@@ -211,6 +222,7 @@ submitBtn.addEventListener("click", function() {
                             );
                             const url = '/api/retrive-data';
                             sendData(url, userData)
+                            setBoardEnabled(false);
                         }
                     }
                 }
@@ -253,6 +265,7 @@ submitBtn.addEventListener("click", function() {
                         );
                         const url = '/api/retrive-data';
                         sendData(url, userData)
+                        setBoardEnabled(false);
                     }
                     break;
                     }
@@ -313,6 +326,7 @@ if (forfeitBtn) {
     forfeitBtn.addEventListener('click', () => {
         forfeitStatus = 'Y';
         alert('Thanks for playing!');
+        setBoardEnabled(false);
         const timeAtCompletetion = performance.now();
         const totalTime = timeAtCompletetion - startTime;
         const userData = formatIntoData(
