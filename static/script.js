@@ -120,6 +120,35 @@ function appendAndRemove(idx) {
         }
     }
 };
+// Move a completed correct group into the top row and label it with the category.
+function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
+    const container = document.querySelector('.images');
+    if (!container || !Array.isArray(correctIds) || correctIds.length !== 4) return;
+
+    const correctEls = correctIds
+        .map((id) => document.getElementById(String(id)))
+        .filter(Boolean);
+
+    if (correctEls.length !== 4) return;
+
+    correctEls.forEach((el) => {
+        el.classList.add('correct-group');
+        el.dataset.category = categoryLabel;
+    });
+
+    const fragment = document.createDocumentFragment();
+    correctEls.forEach((el) => fragment.appendChild(el));
+    container.insertBefore(fragment, container.firstChild);
+
+    const existingLabel = document.querySelector('.correct-group-label');
+    if (existingLabel) existingLabel.remove();
+
+    const label = document.createElement('div');
+    label.className = 'correct-group-label';
+    label.textContent = `${categoryLabel.toUpperCase()} GROUP`;
+    container.parentNode.insertBefore(label, container);
+}
+
 // Appends choices to the selected array so that they can be compared to the correct matches.
 
 for (let i = 0; i < 16; i++) {
@@ -143,6 +172,7 @@ for (let j = 0; j < array.length; j++) {
         console.log(getAvgTimes(arrayOfTimes)) //Maybe change?
     });
 };
+
 
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
@@ -180,6 +210,7 @@ submitBtn.addEventListener("click", function() {
                         el.classList.add("correct");
                         el.disabled = true;
                     };
+                    moveCorrectImagesToTopRow(selected, correctChoice);
                     attempts++;
                     correctAttempts++;
                     accuracy = correctAttempts / attempts;
@@ -235,16 +266,19 @@ function shuffle(array) {
 
 // Shuffle the backing array and also reorder the DOM children inside the .images container
 function shuffleInDOM() {
-    // Fisher-Yates shuffle
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-
     const container = document.querySelector('.images');
     if (!container) return;
 
-    // Re-append elements in shuffled order (skips falsy entries)
+    const fixedEls = array.filter((el) => el && el.classList.contains('correct-group'));
+    const shuffleEls = array.filter((el) => el && !el.classList.contains('correct-group'));
+
+    for (let i = shuffleEls.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffleEls[i], shuffleEls[j]] = [shuffleEls[j], shuffleEls[i]];
+    }
+
+    array = [...fixedEls, ...shuffleEls];
+
     for (const el of array) {
         if (el) container.appendChild(el);
     }
