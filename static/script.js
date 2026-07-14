@@ -194,7 +194,7 @@ submitBtn.addEventListener("click", function() {
                     counter--;
                     if (counter == 0) {
                         alert("Incorrect match. Please try again.");
-                        incorrectSelections.push(selected);
+                        incorrectSelections.push([...selected]);
                         attempts++;
                         incorrectAttempts++;
                         accuracy = correctAttempts / attempts;
