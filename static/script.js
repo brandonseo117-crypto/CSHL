@@ -226,6 +226,7 @@ submitBtn.addEventListener("click", function() {
                             sendData(url, userData);
                             setBoardEnabled(false);
                             forfeitBtn.disabled = true;
+                            alert('Good try. Thank you for playing!')
                         }
                     }
                 }
@@ -268,9 +269,10 @@ submitBtn.addEventListener("click", function() {
                             forfeitStatus
                         );
                         const url = '/api/retrive-data';
-                        sendData(url, userData)
+                        sendData(url, userData);
                         setBoardEnabled(false);
                         forfeitBtn.disabled = true;
+                        alert('You win! Thank you for playing!')
                     }
                     break;
                     }
@@ -330,7 +332,6 @@ const forfeitBtn = document.getElementById('forfeitbtn');
 if (forfeitBtn) {
     forfeitBtn.addEventListener('click', () => {
         forfeitStatus = 'Y';
-        alert('Thanks for playing!');
         setBoardEnabled(false);
         const timeAtCompletetion = performance.now();
         const totalTime = timeAtCompletetion - startTime;
@@ -351,5 +352,6 @@ if (forfeitBtn) {
         const url = '/api/retrive-data';
         sendData(url, userData);
         forfeitBtn.disabled = true;
+        alert('Thanks for playing!');
     })
 };

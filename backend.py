@@ -1,26 +1,19 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from base import save_user_data
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import os
 
-load_dotenv()
+load_dotenv(override=True)
 
 app = Flask(__name__)
 CORS(app)
-
 MONGO_URI = os.getenv("MONGO_URI")
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+client = MongoClient(os.getenv("MONGO_URI"))
 
-db = client["connections_database"]
+db = client["my_app_database"]
 incoming_data_collection = db["user_submissions"]
 
 
@@ -44,6 +37,8 @@ def receive_json_data():
         }), 201
 
     except Exception as e:
+        # Look for this in your terminal logs!
+        print("Actual Database Error:", str(e))
         return jsonify({"error": str(e)}), 500
 
 
