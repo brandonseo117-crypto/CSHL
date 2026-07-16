@@ -37,9 +37,10 @@ let deselectionRate = 0;
 let deselectionEvents = 0;
 // No need to make total time global
 let incorrectSelections = [];
+let correctAdjustments = [];
 let forfeitStatus = 'N';
 
-function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, forfeitStatus) {
+function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, correctAdjustments, forfeitStatus) {
     const userData = {
         'Accuracy': accuracy,
         'Incorrect guesses': incorrectAttempts,
@@ -52,6 +53,7 @@ function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirst
         'Deselection events': deselectionEvents,
         'Total time to complete puzzle': totalTime,
         'Actual selection of incorrect choices': incorrectSelections,
+        'Correct adjustments made after being told they are one away': correctAdjustments,
         'Forfeit?': forfeitStatus
     }
 
@@ -187,6 +189,8 @@ function countCommonItems(arr1, arr2) {
     return arr1.filter((value) => set2.has(value)).length;
 }
 
+let nudged = false
+
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
         if (selected.length == 4) {
@@ -203,11 +207,17 @@ submitBtn.addEventListener("click", function() {
                 }
                 if (countCommonItems(sortedSelected, sortedSelectedMatch) === 3) {
                     oneAway = true;
+                    nudged = true
                 }
             }
 
             if (matchedCategory) {
                 alert(`${matchedCategory}`);
+                if (nudged = true) {
+                    correctAdjustments++;
+                    nudged = false
+                }
+                    ;
                 order.push(matchedCategory);
                 for (const idNum of selected) {
                     const el = document.getElementById(String(idNum));
@@ -241,6 +251,7 @@ submitBtn.addEventListener("click", function() {
                         deselectionEvents, 
                         totalTime, 
                         incorrectSelections, 
+                        correctAdjustments,
                         forfeitStatus
                     );
                     const url = '/api/retrive-data';
@@ -280,6 +291,7 @@ submitBtn.addEventListener("click", function() {
                         deselectionEvents, 
                         totalTime, 
                         incorrectSelections, 
+                        correctAdjustments,
                         forfeitStatus
                     );
                     const url = '/api/retrive-data';
@@ -358,7 +370,8 @@ if (forfeitBtn) {
             deselectionRate, 
             deselectionEvents, 
             totalTime, 
-            incorrectSelections, 
+            incorrectSelections,
+            correctAdjustments, 
             forfeitStatus
         );
         const url = '/api/retrive-data';
