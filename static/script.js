@@ -258,11 +258,14 @@ submitBtn.addEventListener("click", function() {
                     forfeitBtn.disabled = true;
                     alert('You win! Thank you for playing!')
                 }
-            } else if (oneAway) {
-                alert("You are one away from being correct!");
-                nudged = true
-            } else {
+            }  else {
+                if (oneAway) {
+                    alert("You are one away from being correct!");
+                    nudged = true
+                }
+                else {
                 alert("Incorrect match. Please try again.");
+                };
                 incorrectSelections.push([...selected]);
                 attempts++;
                 incorrectAttempts++;
