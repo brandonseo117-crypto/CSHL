@@ -182,102 +182,114 @@ for (let j = 0; j < array.length; j++) {
 };
 
 
+function countCommonItems(arr1, arr2) {
+    const set2 = new Set(arr2);
+    return arr1.filter((value) => set2.has(value)).length;
+}
+
 const submitBtn = document.getElementById("submitbtn");
 submitBtn.addEventListener("click", function() {
         if (selected.length == 4) {
             if (arrFirstSubmission.length == 1) arrFirstSubmission.push(performance.now());
             const sortedSelected = lowToHigh([...selected]);
-            let counter = 4;
+            let matchedCategory = null;
+            let oneAway = false;
+
             for (const match of dailyCorrectMatches) {
-                const sortedSelectedMatch = lowToHigh(match);
-                if (JSON.stringify(sortedSelected) !== JSON.stringify(sortedSelectedMatch)) {
-                    counter--;
-                    if (counter == 0) {
-                        alert("Incorrect match. Please try again.");
-                        incorrectSelections.push([...selected]);
-                        attempts++;
-                        incorrectAttempts++;
-                        accuracy = correctAttempts / attempts;
-                        deselectionRate = deselectionEvents / attempts;
-                        console.log(accuracy);
-                        lives++;
-                        for (let i=0; i < lives; i++) {
-                            const lifeEl = document.getElementById(`life${4-i}`);
-                            if (lifeEl) lifeEl.style.opacity = '0'
-                        };
-                        if (incorrectAttempts == 4) {
-                            const timeAtCompletetion = performance.now();
-                            const totalTime = timeAtCompletetion - startTime;
-                            const userData = formatIntoData(
-                                accuracy, 
-                                incorrectAttempts, 
-                                getAvgTimes(arrayOfTimes), 
-                                findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
-                                findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
-                                order, 
-                                timesShuffled, 
-                                deselectionRate, 
-                                deselectionEvents, 
-                                totalTime, 
-                                incorrectSelections, 
-                                forfeitStatus
-                            );
-                            const url = '/api/retrive-data';
-                            sendData(url, userData);
-                            setBoardEnabled(false);
-                            forfeitBtn.disabled = true;
-                            alert('Good try. Thank you for playing!')
-                        }
-                    }
-                }
+                const sortedSelectedMatch = lowToHigh([...match]);
                 if (JSON.stringify(sortedSelected) === JSON.stringify(sortedSelectedMatch)) {
-                    const correctChoice = matchedGroups[dailyCorrectMatches.indexOf(match)]
-                    alert(`${correctChoice}`);
-                    order.push(correctChoice);
-                    for (const idNum of selected) {
-                        const el = document.getElementById(String(idNum));
-                        if (!el) continue;
-                        el.classList.remove("selected");
-                        el.classList.add("correct");
-                        el.setAttribute('src', 'static/black.jpg');
-                        el.disabled = true;
-                    };
-                    moveCorrectImagesToTopRow(selected, correctChoice);
-                    attempts++;
-                    correctAttempts++;
-                    accuracy = correctAttempts / attempts;
-                    deselectionRate = deselectionEvents / attempts;
-                    console.log(accuracy);
-                    selected.splice(0, 4);
-                    setBoardEnabled(true);
-                    console.log(selected.length);
-                    if (correctAttempts == 4) {
-                        const timeAtCompletetion = performance.now();
-                        const totalTime = timeAtCompletetion - startTime;
-                        const userData = formatIntoData(
-                            accuracy, 
-                            incorrectAttempts, 
-                            getAvgTimes(arrayOfTimes), 
-                            findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
-                            findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
-                            order, 
-                            timesShuffled, 
-                            deselectionRate, 
-                            deselectionEvents, 
-                            totalTime, 
-                            incorrectSelections, 
-                            forfeitStatus
-                        );
-                        const url = '/api/retrive-data';
-                        sendData(url, userData);
-                        setBoardEnabled(false);
-                        forfeitBtn.disabled = true;
-                        alert('You win! Thank you for playing!')
-                    }
+                    matchedCategory = matchedGroups[dailyCorrectMatches.indexOf(match)];
                     break;
-                    }
+                }
+                if (countCommonItems(sortedSelected, sortedSelectedMatch) === 3) {
+                    oneAway = true;
                 }
             }
+
+            if (matchedCategory) {
+                alert(`${matchedCategory}`);
+                order.push(matchedCategory);
+                for (const idNum of selected) {
+                    const el = document.getElementById(String(idNum));
+                    if (!el) continue;
+                    el.classList.remove("selected");
+                    el.classList.add("correct");
+                    el.setAttribute('src', 'static/black.jpg');
+                    el.disabled = true;
+                };
+                moveCorrectImagesToTopRow(selected, matchedCategory);
+                attempts++;
+                correctAttempts++;
+                accuracy = correctAttempts / attempts;
+                deselectionRate = deselectionEvents / attempts;
+                console.log(accuracy);
+                selected.splice(0, 4);
+                setBoardEnabled(true);
+                console.log(selected.length);
+                if (correctAttempts == 4) {
+                    const timeAtCompletetion = performance.now();
+                    const totalTime = timeAtCompletetion - startTime;
+                    const userData = formatIntoData(
+                        accuracy, 
+                        incorrectAttempts, 
+                        getAvgTimes(arrayOfTimes), 
+                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
+                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
+                        order, 
+                        timesShuffled, 
+                        deselectionRate, 
+                        deselectionEvents, 
+                        totalTime, 
+                        incorrectSelections, 
+                        forfeitStatus
+                    );
+                    const url = '/api/retrive-data';
+                    sendData(url, userData);
+                    setBoardEnabled(false);
+                    forfeitBtn.disabled = true;
+                    alert('You win! Thank you for playing!')
+                }
+            } else if (oneAway) {
+                alert("You are one away from being correct!");
+            } else {
+                alert("Incorrect match. Please try again.");
+                incorrectSelections.push([...selected]);
+                attempts++;
+                incorrectAttempts++;
+                accuracy = correctAttempts / attempts;
+                deselectionRate = deselectionEvents / attempts;
+                console.log(accuracy);
+                lives++;
+                
+                for (let i=0; i < lives; i++) {
+                    const lifeEl = document.getElementById(`life${4-i}`);
+                    if (lifeEl) lifeEl.style.opacity = '0'
+                };
+                if (incorrectAttempts == 4) {
+                    const timeAtCompletetion = performance.now();
+                    const totalTime = timeAtCompletetion - startTime;
+                    const userData = formatIntoData(
+                        accuracy, 
+                        incorrectAttempts, 
+                        getAvgTimes(arrayOfTimes), 
+                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
+                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
+                        order, 
+                        timesShuffled, 
+                        deselectionRate, 
+                        deselectionEvents, 
+                        totalTime, 
+                        incorrectSelections, 
+                        forfeitStatus
+                    );
+                    const url = '/api/retrive-data';
+                    sendData(url, userData);
+                    setBoardEnabled(false);
+                    forfeitBtn.disabled = true;
+                    alert('Good try. Thank you for playing!')
+                }
+            }
+        }
         else {
             alert("Please select 4 buttons before submitting.");
             console.log(selected.length);
