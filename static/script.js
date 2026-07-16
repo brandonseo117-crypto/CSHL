@@ -37,7 +37,7 @@ let deselectionRate = 0;
 let deselectionEvents = 0;
 // No need to make total time global
 let incorrectSelections = [];
-let correctAdjustments = [];
+let correctAdjustments = 0;
 let forfeitStatus = 'N';
 
 function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, correctAdjustments, forfeitStatus) {
@@ -207,17 +207,15 @@ submitBtn.addEventListener("click", function() {
                 }
                 if (countCommonItems(sortedSelected, sortedSelectedMatch) === 3) {
                     oneAway = true;
-                    nudged = true
                 }
             }
 
             if (matchedCategory) {
                 alert(`${matchedCategory}`);
-                if (nudged = true) {
+                if (nudged === true) {
                     correctAdjustments++;
                     nudged = false
-                }
-                    ;
+                };
                 order.push(matchedCategory);
                 for (const idNum of selected) {
                     const el = document.getElementById(String(idNum));
@@ -262,6 +260,7 @@ submitBtn.addEventListener("click", function() {
                 }
             } else if (oneAway) {
                 alert("You are one away from being correct!");
+                nudged = true
             } else {
                 alert("Incorrect match. Please try again.");
                 incorrectSelections.push([...selected]);
