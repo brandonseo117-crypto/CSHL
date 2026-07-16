@@ -3,10 +3,10 @@ let selected = [];
 let dailyCorrectMatches = [[5,16,4,3], [15,1,6,12], [14,10,2,8], [13,7,11,9]];
 let lives = 0;
 const matchedGroups = {
-    0: 'Red images',
-    1: 'Green images',
-    2: 'Light blue images',
-    3: 'Dark blue images'
+    0: 'Neuron 15',
+    1: 'Neuron 13',
+    2: 'Neuron 26',
+    3: 'Neuron 38'
 };
 let attempts = 0;
 let correctAttempts = 0;
